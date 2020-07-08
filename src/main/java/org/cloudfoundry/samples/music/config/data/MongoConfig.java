@@ -18,16 +18,16 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 public class MongoConfig {
 
     @Autowired
-    Environment env;
+    private Environment env;
 
     @Bean
     public MongoClient mongoClient() throws JsonProcessingException {
-        JsonNode config = new ObjectMapper().readTree(env.getProperty("VCAP_SERVICES"));
+        JsonNode config = new ObjectMapper().readTree(this.env.getProperty("VCAP_SERVICES"));
         String userName = config.findValue("username").asText();
         String password = config.findValue("password").asText();
         String uri = config.findValue("uri").asText();
-        String connectionString = 	uri.replaceFirst("mongodb\\+srv://", "mongodb+srv://" + userName + ":" + password) + "/test";
-        return (MongoClient) MongoClients.create(connectionString);
+        String connectionString = uri.replaceFirst("mongodb\\+srv://", "mongodb+srv://" + userName + ":" + password + "@") + "/test";
+        return MongoClients.create(connectionString);
     }
     @Bean
     public MongoTemplate mongoTemplate(MongoDatabaseFactory mongoDbFactory) {
